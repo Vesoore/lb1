@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Threading;
+
 namespace lb1
 {
     class Lb
-    {   
+    {
+        public Lb(int a) { }
+        
         public Lb()
         {
             int number = 0;    
-            Console.WriteLine("Введите функционал какого задания использовать 1,2 или 3");
-            while (!int.TryParse(Console.ReadLine(), out number));
-            while(number!=1 && number!=2 && number != 3)
-            {
-                while (!int.TryParse(Console.ReadLine(), out number)) ;
-            }
+            Console.WriteLine("Введите функционал какого задания использовать '1','2' или '3' ");
+            Readint(ref number);
             switch (number)
             {
                 case 1:
@@ -30,15 +31,56 @@ namespace lb1
                     break;
             }
         }
-        
+        protected void Readint(ref int a)
+        {
+            while (!int.TryParse(Console.ReadLine(), out a)) ;
+            while (a != 1 && a != 2 && a != 3)
+            {
+                while (!int.TryParse(Console.ReadLine(), out a)) ;
+            }
+        }
+        private void Readstr(ref string s, params string[] val)
+        {
+            bool flag = true;
+            while (flag)
+            {
+                s = Console.ReadLine();
+                for (int i = 0; i < val.Length; i++)
+                {
+                    if (val[i] == s)
+                        flag = false;
+                }
+            }
+
+        }
+        private void ReadandCheck(ref string s,ref string[] t)
+        {
+            bool flag = true;
+            int n = 0;
+            while (flag)
+            {
+                s=Console.ReadLine();
+                flag = false;
+                 t = s.Split();
+                for (int i = 0; i < t.Length; i++)
+                {
+                    if (!int.TryParse(t[i], out n))
+                    {
+                        flag = true;
+                    }
+                }
+                if (flag)
+                    Console.WriteLine("Некорректные данные введите еще");
+            }
+        }
+
         virtual protected void task1()
         {
             Console.WriteLine("Введите массив через пробел");
-            string s = Console.ReadLine();
+            string s = "";
+            string[] t=null;
+            ReadandCheck(ref s,ref t);
             var ls=new List<int>();
-            string[] t;
-            
-            t = s.Split();
             for (int i = 0; i < t.Length; i++)
                 ls.Add(Convert.ToInt32(t[i]));
             foreach (int i in ls)
@@ -46,42 +88,34 @@ namespace lb1
             Console.WriteLine();
             Max_Min(ref ls);
             Console.WriteLine("Выберите режим сортировки массива 'a' или 'h' ");
-            string r=Console.ReadLine();
-            while(r!="a" && r!="h") r = Console.ReadLine();
+            string r = Console.ReadLine();
+            while (r != "a" && r != "h")
+            {
+                Console.WriteLine("Некорректные данные");
+                r = Console.ReadLine();
+            }
             if (r =="a")
             {
                 ls.Sort();
-                foreach (var item in ls)
-                {
-                    Console.Write(item + " ");
-                }
-                Console.WriteLine();
+                Console.WriteLine(string.Join(" ", ls));
                 ls.Reverse();
-                foreach (var item in ls)
-                {
-                    Console.Write(item + " ");
-                }
-                Console.WriteLine();
+                Console.WriteLine(string.Join(" ", ls));
             }
             if (r =="h")
             {
                 Qsort(ref ls,0,ls.Count-1);
-                foreach (var item in ls)
-                {
-                    Console.Write(item + " ");
-                }
-                Console.WriteLine();
+                Console.WriteLine(string.Join(" ", ls));
                 for (int i = ls.Count - 1; i >= 0; i--)
                     Console.Write(ls[i] + " ");
                 Console.WriteLine();
             }
             
         }
-      virtual  protected void task2()
+      virtual protected void task2()
         {
             Console.WriteLine("Введите количество строк в двумерном массиве");
             int n = -1;
-            n=int.Parse(Console.ReadLine());
+            Readint(ref n);
             Console.WriteLine("Введите массив с элементами через пробел");
             var ls=new List<int>();
             string[][] temp=new string[n][];
@@ -108,7 +142,7 @@ namespace lb1
         {
             Console.WriteLine("Введите количество строк в двумерном массиве");
             int n = -1;
-            n = int.Parse(Console.ReadLine());
+            Readint(ref n);
             Console.WriteLine("Введите массив с элементами через пробел");
             var ls = new List<int>();
             string[][] temp = new string[n][];
@@ -121,11 +155,12 @@ namespace lb1
                     ls.Add(Convert.ToInt32(temp[i][j]));
                 }
             }
+            Max_Min(ref ls);
             Console.WriteLine("Введите номер элемента массива");
-            int num=int.Parse(Console.ReadLine());
+            int num=-1;
+            Readint(ref num);
             Random r = new Random();
             ls[num] = r.Next(-1000000,1000000);
-            Max_Min(ref ls);
             int k = -1;
             for (int i = 0; i < n; i++)
             {
@@ -187,46 +222,79 @@ namespace lb1
     }
     class LBf:Lb
     {
+        private void check_path(ref string path)
+        {
+            bool flag = true;
+            while (flag)
+            {
+                flag = false;
+                path = Console.ReadLine();
+                if (!File.Exists(path))
+                {
+                    flag = true;
+                    Console.WriteLine("Некорректный путь к файлу");
+                }
+            }
+        }
+        private bool chek_str(ref string s)
+        {
+            int n = 0;
+            string[] t = s.Split();
+            for (int i=0;i<t.Length;i++)
+            {
+                if (!int.TryParse(t[i], out n))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
         protected override void task1()
         {
-            Console.WriteLine("Введите массив через пробел");
-            Console.WriteLine("Выберите режим сортировки массива 'a' или 'h' ");
-            StreamReader streamReader = new StreamReader("task1.txt");
-            string s=streamReader.ReadLine();
-            var ls = new List<int>();
-            string[] t;
+            Console.WriteLine("Введите массив через пробел и режим сортировки ('a' или 'h') на след. строке в файле ");
+            string s="", s1="";
+            bool flag = true;
+            while(flag)
+            {
+                flag=false;
+                Console.WriteLine("Введите путь к этому файлу с указанием типа файла(.txt) ");
+                string path = "";
+                check_path(ref path);
+                StreamReader streamReader = new StreamReader(path);
+                s = streamReader.ReadLine();
+                s1 = streamReader.ReadLine();
+                if (!chek_str(ref s))
+                {
+                    flag = true;
+                    Console.WriteLine("Некорректные данные в файле, попробуйте заново ");
+                    streamReader.Close();
+                }
+                 if (s1!="a" && s1!="h")
+                {
+                    flag = true;
+                    Console.WriteLine("Некорректные дынные в файле, попробуйте заново ");
+                    streamReader.Close();
+                }
+            }
 
-            t = s.Split();
+            var ls = new List<int>();
+            string[] t= s.Split();
             for (int i = 0; i < t.Length; i++)
                 ls.Add(Convert.ToInt32(t[i]));
-            foreach (int i in ls)
-                Console.Write(i + " ");
-            Console.WriteLine();
+            Console.WriteLine(string.Join(" ", ls));
             Max_Min(ref ls);
-            s=streamReader.ReadLine();
-            if (s == "a")
+            if (s1 == "a")
             {
                 ls.Sort();
-                foreach (var item in ls)
-                {
-                    Console.Write(item + " ");
-                }
-                Console.WriteLine();
+                Console.WriteLine(string.Join(" ", ls));
                 ls.Reverse();
-                foreach (var item in ls)
-                {
-                    Console.Write(item + " ");
-                }
-                Console.WriteLine();
+                Console.WriteLine(string.Join(" ", ls));
             }
-            if (s == "h")
+            if (s1 == "h")
             {
                 Qsort(ref ls, 0, ls.Count - 1);
-                foreach (var item in ls)
-                {
-                    Console.Write(item + " ");
-                }
-                Console.WriteLine();
+                Console.WriteLine(string.Join(" ", ls));
                 for (int i = ls.Count - 1; i >= 0; i--)
                     Console.Write(ls[i] + " ");
                 Console.WriteLine();
@@ -235,45 +303,126 @@ namespace lb1
 
         protected override void task2()
         {
-            StreamReader streamReader = new StreamReader("task2.txt");
             var ls=new List<int>();
-           // Console.WriteLine("Введите количество строк в двумерном массиве");
-            //Console.WriteLine("Введите массив с элементами через пробел");
-            int n=int.Parse(streamReader.ReadLine());
-            string[][] temp = new string[n][];
-            for (int i = 0; i < n; i++)
+            var lst = new List<string>();
+            Console.WriteLine("Введите массив с элементами через пробел в файл");
+            string s = "";
+            bool flag = true;
+            while (flag)
             {
-                string s = streamReader.ReadLine();
-                temp[i] = s.Split();
+                flag = false;
+                Console.WriteLine("Введите путь к этому файлу с указанием типа файла(.txt) ");
+                string path = "";
+                check_path(ref path);
+                StreamReader streamReader = new StreamReader(path);
+                
+                while (!streamReader.EndOfStream)
+                {
+                    s = streamReader.ReadLine();
+                    if (!chek_str(ref s))
+                    {
+                        flag = true;
+                        Console.WriteLine("Некорректные данные в файле, попробуйте заново ");
+                        streamReader.Close();
+                        break;
+                    }
+                    lst.Add(s);
+                }
+
+                
+            }
+
+            string[][] temp = new string[lst.Count][];
+            for (int i = 0; i < lst.Count; i++)
+            {
+                temp[i] = lst[i].Split();
                 for (int j = 0; j < temp[i].Length; j++)
                 {
                     ls.Add(Convert.ToInt32(temp[i][j]));
                 }
             }
             Max_Min(ref ls);
-            for (int i = 0; i < n; i++)
+            foreach (var item in lst)
             {
-                for (int j=0;j<temp.Length; j++)
-                    Console.Write(temp[i][j]+" ");
-                Console.WriteLine();
+                Console.WriteLine(item);
             }
         }
+        protected override void task3()
+        {
+            var ls = new List<int>();
+            var lst = new List<string>();
+            Console.WriteLine("Введите массив с элементами через пробел в файл");
+            string s = "";
+            bool flag = true;
+            while (flag)
+            {
+                flag = false;
+                Console.WriteLine("Введите путь к этому файлу с указанием типа файла(.txt) ");
+                string path = "";
+                check_path(ref path);
+                StreamReader streamReader = new StreamReader(path);
 
+                while (!streamReader.EndOfStream)
+                {
+                    s = streamReader.ReadLine();
+                    if (!chek_str(ref s))
+                    {
+                        flag = true;
+                        Console.WriteLine("Некорректные данные в файле, попробуйте заново ");
+                        streamReader.Close();
+                        break;
+                    }
+                    lst.Add(s);
+                }
+            }
+            string[][] temp = new string[lst.Count][];
+            for (int i = 0; i < lst.Count; i++)
+            {
+                temp[i] = lst[i].Split();
+                for (int j = 0; j < temp[i].Length; j++)
+                {
+                    ls.Add(Convert.ToInt32(temp[i][j]));
+                }
+            }
+            for (int i = 0; i < lst.Count; i++)
+            {
+                for (int j = 0; j < temp[i].Length; j++)
+                {
+                    Console.Write(temp[i][j]+" ");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine("Введите номер элемента массива");
+            int n = 0;
+            Readint(ref n);
+            Max_Min(ref ls);
+            Random r = new Random();
+            ls[n] = r.Next(-1000000, 1000000);
+            int k = -1;
+            for (int i = 0; i < lst.Count; i++)
+            {
+                for (int j = 0; j < temp[i].Length; j++)
+                {
+                    Console.Write(ls[++k] + " ");
+                }
+                Console.WriteLine();
+            }
+
+        }
     }
     internal class Program
     {
         static void Main(string[] args)
         {
             string s="";
-            while(s != "000")
+            while (s != "000")
             {
-                //Console.WriteLine("Для завершения введите 000");
                 Console.WriteLine("Выберите формат ввода: из файла 'f' или с клавиатуры 'k' или введите '000'для завершения работы");
-                 s=Console.ReadLine();
-                while (s != "000" && s != "f" && s != "k") s=Console.ReadLine();
+                s = Console.ReadLine();
+                while (s != "000" && s != "f" && s != "k") s = Console.ReadLine();
                 if (s == "000")
                     break;
-                while(s!="f" && s!="k") Console.ReadLine();
+                while (s != "f" && s != "k") Console.ReadLine();
                 if (s == "f")
                 {
                     LBf f = new LBf();
@@ -282,9 +431,8 @@ namespace lb1
                 {
                     Lb lb = new Lb();
                 }
-                Console.WriteLine("----------------------------------------------------------------------------");
+                Console.WriteLine("----------------------------------------------------------------------------------");
             }
-         
         }
     }
 }
