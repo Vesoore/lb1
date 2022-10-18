@@ -2,20 +2,23 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
 namespace lb1
 {
     class Lb
-    {
-        public Lb(int a) { }
-        
+    {   
         public Lb()
         {
-            int number = 0;    
+            int a = 0;    
             Console.WriteLine("Введите функционал какого задания использовать '1','2' или '3' ");
-            Readint(ref number);
-            switch (number)
+            while (!int.TryParse(Console.ReadLine(), out a)) ;
+            while (a != 1 && a != 2 && a != 3)
+            {
+                while (!int.TryParse(Console.ReadLine(), out a)) ;
+            }
+            switch (a)
             {
                 case 1:
                     task1();
@@ -31,55 +34,36 @@ namespace lb1
                     break;
             }
         }
-        protected void Readint(ref int a)
+        private bool Check(ref string[] s)
         {
-            while (!int.TryParse(Console.ReadLine(), out a)) ;
-            while (a != 1 && a != 2 && a != 3)
+            int n = -1;
+            for (int i=0; i < s.Length; i++)
             {
-                while (!int.TryParse(Console.ReadLine(), out a)) ;
-            }
-        }
-        private void Readstr(ref string s, params string[] val)
-        {
-            bool flag = true;
-            while (flag)
-            {
-                s = Console.ReadLine();
-                for (int i = 0; i < val.Length; i++)
+                if (!int.TryParse(s[i], out n))
                 {
-                    if (val[i] == s)
-                        flag = false;
+                    return false;
                 }
             }
-
+            return true;
         }
-        private void ReadandCheck(ref string s,ref string[] t)
-        {
-            bool flag = true;
-            int n = 0;
-            while (flag)
-            {
-                s=Console.ReadLine();
-                flag = false;
-                 t = s.Split();
-                for (int i = 0; i < t.Length; i++)
-                {
-                    if (!int.TryParse(t[i], out n))
-                    {
-                        flag = true;
-                    }
-                }
-                if (flag)
-                    Console.WriteLine("Некорректные данные введите еще");
-            }
-        }
-
         virtual protected void task1()
         {
             Console.WriteLine("Введите массив через пробел");
             string s = "";
             string[] t=null;
-            ReadandCheck(ref s,ref t);
+            bool flag = true;
+            while(flag)
+            {
+                flag = false;
+                s = Console.ReadLine();
+                t = s.Split();
+                if (!Check(ref t))
+                {
+                    Console.WriteLine("Некорректные данные, введите еще");
+                    flag = true;
+                }
+            }
+            
             var ls=new List<int>();
             for (int i = 0; i < t.Length; i++)
                 ls.Add(Convert.ToInt32(t[i]));
@@ -115,19 +99,33 @@ namespace lb1
         {
             Console.WriteLine("Введите количество строк в двумерном массиве");
             int n = -1;
-            Readint(ref n);
+            while (!int.TryParse(Console.ReadLine(), out n)) ;
             Console.WriteLine("Введите массив с элементами через пробел");
             var ls=new List<int>();
             string[][] temp=new string[n][];
-            for (int i = 0; i < n; i++)
+            string s = "";
+            bool flag = true;
+            while (flag)
             {
-                string s = Console.ReadLine();
-                temp[i]=s.Split();
-                for (int j = 0; j < temp[i].Length; j++)
+                flag = false;
+
+                for (int i = 0; i < n; i++)
                 {
-                    ls.Add(Convert.ToInt32(temp[i][j]));
+                    s = Console.ReadLine();
+                    temp[i] = s.Split();
+                    if (!Check(ref temp[i]))
+                    {
+                        Console.WriteLine("Некорректные данные, введите еще");
+                        flag = true;
+                        break;
+                    }
+                    
+                    for (int j = 0; j < temp[i].Length; j++)
+                    {
+                        ls.Add(Convert.ToInt32(temp[i][j]));
+                    }
                 }
-            } 
+            }
             Max_Min(ref ls);
             for (int i = 0; i < n; i++)
             {
@@ -142,23 +140,47 @@ namespace lb1
         {
             Console.WriteLine("Введите количество строк в двумерном массиве");
             int n = -1;
-            Readint(ref n);
+            while (!int.TryParse(Console.ReadLine(), out n)) ;
             Console.WriteLine("Введите массив с элементами через пробел");
             var ls = new List<int>();
             string[][] temp = new string[n][];
-            for (int i = 0; i < n; i++)
+            string s = "";
+            bool flag = true;
+            while (flag)
             {
-                string s = Console.ReadLine();
-                temp[i] = s.Split();
-                for (int j = 0; j < temp[i].Length; j++)
+                flag = false;
+
+                for (int i = 0; i < n; i++)
                 {
-                    ls.Add(Convert.ToInt32(temp[i][j]));
+                    s = Console.ReadLine();
+                    temp[i] = s.Split();
+                    if (!Check(ref temp[i]))
+                    {
+                        Console.WriteLine("Некорректные данные, введите еще");
+                        flag = true;
+                        break;
+                    }
+
+                    for (int j = 0; j < temp[i].Length; j++)
+                    {
+                        ls.Add(Convert.ToInt32(temp[i][j]));
+                    }
                 }
             }
             Max_Min(ref ls);
             Console.WriteLine("Введите номер элемента массива");
             int num=-1;
-            Readint(ref num);
+            bool flag2 = true;
+            while (flag2)
+            {
+                flag2 = false;
+                while (!int.TryParse(Console.ReadLine(), out num));
+                if (num > ls.Count - 1)
+                {
+                    Console.WriteLine("Нет такого индекса массива");
+                    flag2 = true;
+                }
+            }
             Random r = new Random();
             ls[num] = r.Next(-1000000,1000000);
             int k = -1;
@@ -392,10 +414,10 @@ namespace lb1
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine("Введите номер элемента массива");
-            int n = 0;
-            Readint(ref n);
             Max_Min(ref ls);
+            Console.WriteLine("Введите номер элемента массива");
+            int n = -1;
+            while (!int.TryParse(Console.ReadLine(),out n));
             Random r = new Random();
             ls[n] = r.Next(-1000000, 1000000);
             int k = -1;
@@ -410,6 +432,7 @@ namespace lb1
 
         }
     }
+    
     internal class Program
     {
         static void Main(string[] args)
@@ -419,10 +442,13 @@ namespace lb1
             {
                 Console.WriteLine("Выберите формат ввода: из файла 'f' или с клавиатуры 'k' или введите '000'для завершения работы");
                 s = Console.ReadLine();
-                while (s != "000" && s != "f" && s != "k") s = Console.ReadLine();
+                while (s != "000" && s != "f" && s != "k")
+                {
+                    Console.WriteLine("Некоррктный ввод");
+                    s = Console.ReadLine();
+                }
                 if (s == "000")
                     break;
-                while (s != "f" && s != "k") Console.ReadLine();
                 if (s == "f")
                 {
                     LBf f = new LBf();
