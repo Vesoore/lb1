@@ -284,6 +284,14 @@ namespace lb1
                 string path = "";
                 check_path(ref path);
                 StreamReader streamReader = new StreamReader(path);
+                FileInfo fileInfo = new FileInfo(path);
+                if (fileInfo.Length == 0)
+                {
+                    flag = true;
+                    fileInfo = null;
+                    streamReader.Close();
+                    continue;
+                }
                 s = streamReader.ReadLine();
                 s1 = streamReader.ReadLine();
                 if (!chek_str(ref s))
@@ -337,7 +345,15 @@ namespace lb1
                 string path = "";
                 check_path(ref path);
                 StreamReader streamReader = new StreamReader(path);
-                
+                FileInfo fileInfo = new FileInfo(path);
+                if (fileInfo.Length == 0)
+                {
+                    flag = true;
+                    fileInfo = null;
+                    streamReader.Close();
+                    continue;
+                }
+
                 while (!streamReader.EndOfStream)
                 {
                     s = streamReader.ReadLine();
@@ -383,6 +399,14 @@ namespace lb1
                 string path = "";
                 check_path(ref path);
                 StreamReader streamReader = new StreamReader(path);
+                FileInfo fileInfo = new FileInfo(path);
+                if (fileInfo.Length == 0)
+                {
+                    flag = true;
+                    fileInfo = null;
+                    streamReader.Close();
+                    continue;
+                }
 
                 while (!streamReader.EndOfStream)
                 {
@@ -417,7 +441,17 @@ namespace lb1
             Max_Min(ref ls);
             Console.WriteLine("Введите номер элемента массива");
             int n = -1;
-            while (!int.TryParse(Console.ReadLine(),out n));
+            bool flag2 = true;
+            while (flag2)
+            {
+                flag2 = false;
+                while (!int.TryParse(Console.ReadLine(), out n)) ;
+                if (n > ls.Count - 1)
+                {
+                    Console.WriteLine("Нет такого индекса массива");
+                    flag2 = true;
+                }
+            }
             Random r = new Random();
             ls[n] = r.Next(-1000000, 1000000);
             int k = -1;
