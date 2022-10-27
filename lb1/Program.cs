@@ -13,10 +13,11 @@ namespace lb1
         {
             int a = 0;    
             Console.WriteLine("Введите функционал какого задания использовать '1','2' или '3' ");
-            while (!int.TryParse(Console.ReadLine(), out a)) ;
+            while (!int.TryParse(Console.ReadLine(), out a)) { Console.WriteLine("Некорректный ввод, введите заново"); }
             while (a != 1 && a != 2 && a != 3)
             {
-                while (!int.TryParse(Console.ReadLine(), out a)) ;
+                Console.WriteLine("Некорректный ввод, введите еще");
+                while (!int.TryParse(Console.ReadLine(), out a)) { Console.WriteLine("Некорректный ввод, введите заново"); }
             }
             switch (a)
             {
@@ -478,7 +479,7 @@ namespace lb1
                 s = Console.ReadLine();
                 while (s != "000" && s != "f" && s != "k")
                 {
-                    Console.WriteLine("Некоррктный ввод");
+                    Console.WriteLine("Некоррктный ввод, введите заново");
                     s = Console.ReadLine();
                 }
                 if (s == "000")
